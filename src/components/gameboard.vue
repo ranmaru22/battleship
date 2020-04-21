@@ -1,7 +1,7 @@
 <template>
   <div class="root">
     <h2>Enemy Ships</h2>
-    <div class="player-board">
+    <div class="player-board" :class="!setupPhase && 'focus'">
       <div class="board-row" v-for="(row, i) in player1.board.board" :key="`pr${i}`">
         <span
           :id="`pc${i}-${j}`"
@@ -20,7 +20,7 @@
     </div>
 
     <h2>Your Ships</h2>
-    <div class="enemy-board">
+    <div class="enemy-board" :class="setupPhase && 'focus'">
       <div class="board-row" v-for="(row, i) in player2.board.board" :key="`er${i}`">
         <span
           :id="`ec${i}-${j}`"
@@ -28,8 +28,8 @@
           :class="hasShip(i, j, 2) && 'set-ship'"
           v-for="(cell, j) in row"
           :key="`ec${j}`"
-          @click.left="placeShip(i, j, false)"
-          @click.right="placeShip(i, j, true)"
+          @click.left="placeShip($event, i, j, false)"
+          @click.right="placeShip($event, i, j, true)"
         ></span>
       </div>
     </div>
@@ -126,10 +126,11 @@ export default class HelloWorld extends Vue {
     }
   }
 
-  public placeShip(x: number, y: number, vertical: boolean) {
+  public placeShip(e: Event, x: number, y: number, vertical: boolean) {
     if (!this.setupPhase) {
       return;
     }
+    e.preventDefault();
     if (this.player2.board.placeShip(this.shipsPlaced, x, y, vertical)) {
       this.message = `${Type[this.shipsPlaced]} placed at ${x},${y}.`;
       this.shipsPlaced++;
@@ -155,7 +156,7 @@ export default class HelloWorld extends Vue {
 .root {
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: 400px 100px 400px;
+  grid-template-columns: 400px 200px 400px;
   grid-template-rows: auto auto;
   place-items: center center;
   place-content: center center;
@@ -167,13 +168,14 @@ export default class HelloWorld extends Vue {
   }
 }
 
+.focus {
+  box-shadow: 0 0 25px lightblue, 0 0 5px blue;
+}
+
 .message {
   margin-top: 10px;
 }
 
-.player-board {
-  margin-bottom: 35px;
-}
 .board-row {
   display: grid;
   grid-template-columns: repeat(10, 32px);
