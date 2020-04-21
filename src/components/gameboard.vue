@@ -28,6 +28,8 @@
           :class="hasShip(i, j, 2) && 'set-ship'"
           v-for="(cell, j) in row"
           :key="`ec${j}`"
+          @click.left="placeShip(i, j, false)"
+          @click.right="placeShip(i, j, true)"
         ></span>
       </div>
     </div>
@@ -38,6 +40,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import Player from "../scripts/player";
 import Gameboard from "../scripts/gameboard";
+import { Type } from "../scripts/ship";
 
 @Component
 export default class HelloWorld extends Vue {
@@ -45,18 +48,23 @@ export default class HelloWorld extends Vue {
   public player2: Player;
   public message: string;
   public enemyMessage: string;
+  private setupPhase: boolean;
+  private shipsPlaced: number;
 
   constructor() {
     super();
     this.player1 = new Player("Player");
     this.player2 = new Player("Computer", true);
-    this.message = "Let's go!";
-    this.enemyMessage = "Click any cell to attack.";
+    this.message = "Welcome to Battleship. Begin by placing your Destroyer.";
+    this.enemyMessage =
+      "Left click to place vertically, right click to place horizontally.";
+    this.shipsPlaced = 0;
+    this.setupPhase = true;
   }
 
   beforeMount(): void {
     this.placeShipsRandom(this.player1.board);
-    this.placeShipsRandom(this.player2.board);
+    // this.placeShipsRandom(this.player2.board);
   }
 
   private getRandomNumber(max: number): number {
@@ -64,13 +72,13 @@ export default class HelloWorld extends Vue {
   }
 
   private placeShipsRandom(board: Gameboard): void {
-    let i = 1;
-    while (i !== 6) {
+    let ships = 0;
+    while (ships !== 5) {
       const vertical = this.getRandomNumber(10) % 2 === 0;
-      const x = this.getRandomNumber(vertical ? 9 : 9 - i);
-      const y = this.getRandomNumber(vertical ? 9 - i : 9);
-      if (board.placeShip(i, x, y, vertical)) {
-        i++;
+      const x = this.getRandomNumber(vertical ? 9 : 9 - ships);
+      const y = this.getRandomNumber(vertical ? 9 - ships : 9);
+      if (board.placeShip(ships, x, y, vertical)) {
+        ships++;
       }
     }
   }
@@ -94,10 +102,13 @@ export default class HelloWorld extends Vue {
   }
 
   public makeMove(e: Event, x: number, y: number): void {
+    if (this.setupPhase) {
+      return;
+    }
     if (!this.player1.board.isIllegalMove(x, y)) {
       const hit = this.player1.board.receiveAttack(x, y);
-      (e.target as HTMLElement)!.textContent = hit ? "O" : "X";
-      (e.target as HTMLElement)!.classList.add(hit ? "ship-hit" : "ship-miss");
+      (e.target as HTMLElement).textContent = hit ? "O" : "X";
+      (e.target as HTMLElement).classList.add(hit ? "ship-hit" : "ship-miss");
       this.message = `You attack at ${x},${y}. ${
         !hit
           ? "You miss."
@@ -112,6 +123,22 @@ export default class HelloWorld extends Vue {
       }
     } else {
       console.log("Illegal move: " + [x, y]);
+    }
+  }
+
+  public placeShip(x: number, y: number, vertical: boolean) {
+    if (!this.setupPhase) {
+      return;
+    }
+    if (this.player2.board.placeShip(this.shipsPlaced, x, y, vertical)) {
+      this.message = `${Type[this.shipsPlaced]} placed at ${x},${y}.`;
+      this.shipsPlaced++;
+      if (this.shipsPlaced === 5) {
+        this.enemyMessage = "All ships placed. Make your first attack!";
+        this.setupPhase = false;
+      } else {
+        this.enemyMessage = `Now place your ${Type[this.shipsPlaced]}.`;
+      }
     }
   }
 
