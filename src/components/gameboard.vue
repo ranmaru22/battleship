@@ -63,7 +63,7 @@ import Gameboard from "../scripts/gameboard";
 import { Type } from "../scripts/ship";
 
 @Component
-export default class HelloWorld extends Vue {
+export default class Game extends Vue {
   public player1: Player;
   public player2: Player;
   public message: string;
