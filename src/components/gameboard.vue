@@ -50,6 +50,7 @@ export default class HelloWorld extends Vue {
   public enemyMessage: string;
   private setupPhase: boolean;
   private shipsPlaced: number;
+  private gameOver: boolean;
 
   constructor() {
     super();
@@ -60,6 +61,7 @@ export default class HelloWorld extends Vue {
       "Left click to place vertically, right click to place horizontally.";
     this.shipsPlaced = 0;
     this.setupPhase = true;
+    this.gameOver = false;
   }
 
   beforeMount(): void {
@@ -97,12 +99,14 @@ export default class HelloWorld extends Vue {
         : `They hit your ${hit[1]}.`
     }`;
     if (this.player2.board.allShipsSunk()) {
+      this.message = "Oh, no!";
       this.enemyMessage = "Your enemy sunk all your ships. You lose.";
+      this.gameOver = true;
     }
   }
 
   public makeMove(e: Event, x: number, y: number): void {
-    if (this.setupPhase) {
+    if (this.setupPhase || this.gameOver) {
       return;
     }
     if (!this.player1.board.isIllegalMove(x, y)) {
@@ -117,7 +121,9 @@ export default class HelloWorld extends Vue {
           : "You hit one of your enemy's ships."
       }`;
       if (this.player1.board.allShipsSunk()) {
-        this.message = "You sunk all your enemy's ships. You win!";
+        this.message = "Congratulations!";
+        this.enemyMessage = "You sunk all your enemy's ships. You win!";
+        this.gameOver = true;
       } else {
         this.aiMove();
       }
@@ -169,7 +175,7 @@ export default class HelloWorld extends Vue {
 }
 
 .focus {
-  box-shadow: 0 0 25px lightblue, 0 0 5px blue;
+  box-shadow: 0 0 25px blue, 0 0 5px darkblue;
 }
 
 .message {
