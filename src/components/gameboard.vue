@@ -28,7 +28,7 @@
           :class="hasShip(i, j, 2) && 'set-ship'"
           v-for="(cell, j) in row"
           :key="`ec${j}`"
-        >{{cell === -1 ? "" : cell}}</span>
+        ></span>
       </div>
     </div>
   </div>
