@@ -1,27 +1,43 @@
 /* eslint-disable */
+export enum Type { Destroyer, Cruiser, Submarine, Battleship, Carrier }
 
-export default class Ship {
-    private static shipTypes: Map<number, string> = new Map<number, string>([
-        [1, "Patrol Boat"],
-        [2, "Destroyer"],
-        [3, "Cruiser"],
-        [4, "Battleship"],
-        [5, "Carrier"]
-    ]);
+export class Ship {
     private length: number;
+    private type: string;
     private hits: boolean[];
     private sunk: boolean;
     private position: [number, number][];
 
-    constructor(length: number) {
-        this.length = length;
+    constructor(type: Type) {
+        switch (type) {
+            case Type.Destroyer:
+                this.length = 2;
+                this.type = "Destroyer";
+                break;
+            case Type.Cruiser:
+                this.length = 3;
+                this.type = "Cruiser";
+                break;
+            case Type.Submarine:
+                this.length = 3;
+                this.type = "Submarine";
+                break;
+            case Type.Battleship:
+                this.length = 4;
+                this.type = "Battleship";
+                break;
+            case Type.Carrier:
+                this.length = 5;
+                this.type = "Carrier";
+                break;
+        }
         this.hits = new Array(this.length).fill(false);
         this.sunk = false;
         this.position = new Array(this.length).fill([0, 0]);
     }
 
     public getLength: () => number = () => this.length;
-    public getType: () => string = () => Ship.shipTypes.get(this.length)!;
+    public getType: () => string = () => this.type;
     public getHits: () => boolean[] = () => this.hits;
     public getPosition: () => [number, number][] = () => this.position;
     public isSunk: () => boolean = () => this.sunk;
