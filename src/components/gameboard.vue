@@ -13,6 +13,16 @@
       </div>
     </div>
 
+    <div class="enemy-ships-list">
+      <ul>
+        <li id="e-destroyer">Destroyer</li>
+        <li id="e-cruiser">Cruiser</li>
+        <li id="e-submarine">Submarine</li>
+        <li id="e-battleship">Battleship</li>
+        <li id="e-carrier">Carrier</li>
+      </ul>
+    </div>
+
     <div id="messages">
       <div class="message">{{message}}</div>
       <hr />
@@ -32,6 +42,16 @@
           @click.right="placeShip($event, i, j, true)"
         ></span>
       </div>
+    </div>
+
+    <div class="player-ships-list">
+      <ul>
+        <li id="p-destroyer">Destroyer</li>
+        <li id="p-cruiser">Cruiser</li>
+        <li id="p-submarine">Submarine</li>
+        <li id="p-battleship">Battleship</li>
+        <li id="p-carrier">Carrier</li>
+      </ul>
     </div>
   </div>
 </template>
@@ -98,6 +118,11 @@ export default class HelloWorld extends Vue {
         ? `They sink your ${hit[1]}.`
         : `They hit your ${hit[1]}.`
     }`;
+    if (hit[2]) {
+      document
+        .querySelector(`#p-${hit[1].toLowerCase()}`)!
+        .classList.add("sunk");
+    }
     if (this.player2.board.allShipsSunk()) {
       this.message = "Oh, no!";
       this.enemyMessage = "Your enemy sunk all your ships. You lose.";
@@ -120,6 +145,11 @@ export default class HelloWorld extends Vue {
           ? `You sink your enemy's ${hit[1]}.`
           : "You hit one of your enemy's ships."
       }`;
+      if (hit[2]) {
+        document
+          .querySelector(`#e-${hit[1].toLowerCase()}`)!
+          .classList.add("sunk");
+      }
       if (this.player1.board.allShipsSunk()) {
         this.message = "Congratulations!";
         this.enemyMessage = "You sunk all your enemy's ships. You win!";
@@ -163,11 +193,11 @@ export default class HelloWorld extends Vue {
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: 400px 200px 400px;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   place-items: center center;
   place-content: center center;
   #messages {
-    grid-row: 2 / span 2;
+    grid-row: 1 / span 3;
     hr {
       border-top: 1px solid black;
     }
@@ -193,6 +223,21 @@ export default class HelloWorld extends Vue {
   height: 30px;
   border: 1px solid black;
   background-color: lightblue;
+}
+
+.player-ships-list,
+.enemy-ships-list {
+  ul {
+    li {
+      display: inline;
+      margin: 0 5px;
+    }
+  }
+}
+
+.sunk {
+  text-decoration: line-through;
+  font-style: oblique;
 }
 
 .unknown {
