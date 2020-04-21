@@ -1,5 +1,5 @@
 /* eslint-disable */
-import Ship from "./ship";
+import { Ship, Type } from "./ship";
 
 export default class Gameboard {
     private board: number[][];
@@ -19,7 +19,9 @@ export default class Gameboard {
     public getBoard: () => number[][] = () => this.board;
 
     public cellIsEmpty(x: number, y: number): boolean {
-        return this.board[x][y] === -1;
+        try {
+            return this.board[x][y] === -1;
+        } catch (Error) { return false; }
     }
 
     private canPlaceShip(ship: Ship): boolean {
@@ -28,7 +30,7 @@ export default class Gameboard {
             .every(e => e !== false);
     }
 
-    public placeShip(type: number, x: number, y: number, vertical: boolean = false): boolean {
+    public placeShip(type: Type, x: number, y: number, vertical: boolean = false): boolean {
         const newShip = new Ship(type);
         newShip.placeShip(x, y, vertical);
         if (!this.canPlaceShip(newShip)) {
