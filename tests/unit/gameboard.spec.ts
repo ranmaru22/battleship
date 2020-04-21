@@ -1,4 +1,5 @@
 import Gameboard from '../../src/scripts/gameboard';
+import { Type } from '../../src/scripts/ship';
 
 describe("Gameboard.ts", () => {
     it("creates the board and initializes its members properly", () => {
@@ -9,25 +10,25 @@ describe("Gameboard.ts", () => {
 
     it("places a ship correctly", () => {
         const sampleBoard = new Gameboard();
-        expect(sampleBoard.placeShip(1, 0, 0)).toBe(true);
+        expect(sampleBoard.placeShip(Type.Destroyer, 0, 0)).toBe(true);
         expect(sampleBoard.getBoard()[0][0]).not.toEqual(-1);
     });
 
     it("recognizes invalid ship placement", () => {
         const sampleBoard = new Gameboard();
-        expect(sampleBoard.placeShip(1, 0, 0)).toBe(true);
-        expect(sampleBoard.placeShip(2, 0, 0)).toBe(false);
+        expect(sampleBoard.placeShip(Type.Destroyer, 0, 0)).toBe(true);
+        expect(sampleBoard.placeShip(Type.Destroyer, 0, 0)).toBe(false);
     });
 
     describe("receiveAttack", () => {
         it("recognizes a successfull attack", () => {
             const sampleBoard = new Gameboard();
-            sampleBoard.placeShip(1, 0, 0);
+            sampleBoard.placeShip(Type.Destroyer, 0, 0);
             expect(sampleBoard.receiveAttack(0, 0)[0]).toBe(true);
         });
         it("recognizes a miss", () => {
             const sampleBoard = new Gameboard();
-            sampleBoard.placeShip(1, 0, 0);
+            sampleBoard.placeShip(Type.Destroyer, 0, 0);
             expect(sampleBoard.receiveAttack(1, 1)).toBe(false);
         });
 
@@ -36,12 +37,11 @@ describe("Gameboard.ts", () => {
     it("reports correctly whether all ships are sunk", () => {
         const sampleBoard = new Gameboard();
         expect(sampleBoard.allShipsSunk()).toBe(false);
-        sampleBoard.placeShip(1, 0, 0);
-        sampleBoard.placeShip(1, 1, 1);
+        sampleBoard.placeShip(Type.Destroyer, 0, 0);
         expect(sampleBoard.allShipsSunk()).toBe(false);
         sampleBoard.receiveAttack(0, 0);
         expect(sampleBoard.allShipsSunk()).toBe(false);
-        sampleBoard.receiveAttack(1, 1);
+        sampleBoard.receiveAttack(1, 0);
         expect(sampleBoard.allShipsSunk()).toBe(true);
     });
 
